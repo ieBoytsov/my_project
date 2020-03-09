@@ -2,7 +2,7 @@ import glob
 import os
 
 import numpy as np
-from cv2 import cv2
+import cv2
 
 
 class StereoDepthEstimationTask:
