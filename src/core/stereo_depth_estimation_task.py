@@ -1,14 +1,13 @@
-import glob
 import os
 
-import numpy as np
 import cv2
+import numpy as np
 
 
 class StereoDepthEstimationTask:
-    def __init__(self, image_data_path, num_disparities, block_size):
+    def __init__(self, image_data_path_template, num_disparities, block_size):
         super().__init__()
-        self.image_data_path = image_data_path
+        self.image_data_path_template = image_data_path_template
         self.num_disparities = num_disparities
         self.block_size = block_size
 
@@ -19,24 +18,14 @@ class StereoDepthEstimationTask:
         [[640.0, 0.0, 640.0, 2176.0], [0.0, 480.0, 480.0, 792.0], [0.0, 0.0, 1.0, 1.4]]
     )
 
-    def get_single_image_pair(self, subdir):
-        pair = {}
-        for img_name in os.listdir(subdir):
-            if "right" in img_name:
-                pair["right"] = cv2.imread(os.path.join(subdir, img_name))
-            elif "left" in img_name:
-                pair["left"] = cv2.imread(os.path.join(subdir, img_name))
-            else:
-                raise Exception(
-                    "incorrect filename, each subdir must consist of a pair of left and right images only"
-                )
-        return pair
-
-    def get_image_pairs(self):
-        image_pairs = {}
-        for subdir in glob.glob(self.image_data_path):
-            image_pairs[os.path.basename(subdir)] = self.get_single_image_pair(subdir)
-        return image_pairs
+    def get_image_pair(self, img_name):
+        left_img = cv2.imread(
+            os.path.join(self.image_data_path_template.format("left"), img_name)
+        )
+        right_img = cv2.imread(
+            os.path.join(self.image_data_path_template.format("right"), img_name)
+        )
+        return left_img, right_img
 
     def compute_disparity_map(self, img_left, img_right):
 
@@ -92,12 +81,12 @@ class StereoDepthEstimationTask:
         camera_right, r_right, t_right = self.decompose_projection_matrix(
             self.right_calib_matrix
         )
-
-        image_pairs = self.get_image_pairs()
-        depth_dict = {}
-        for img_pair_name, img_pair_dict in image_pairs.items():
-            left_img, right_img = img_pair_dict["left"], img_pair_dict["right"]
+        depths_list = []
+        for img_name in sorted(
+            os.listdir(self.image_data_path_template.format("left"))
+        ):
+            left_img, right_img = self.get_image_pair(img_name)
             disparity = self.compute_disparity_map(left_img, right_img)
             depth_map = self.compute_depth_map(disparity, camera_left, t_left, t_right)
-            depth_dict[img_pair_name] = depth_map
-        return depth_dict
+            depths_list.append(depth_map)
+        return depths_list
