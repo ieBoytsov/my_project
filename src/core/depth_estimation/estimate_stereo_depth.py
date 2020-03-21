@@ -3,11 +3,14 @@ import os
 import cv2
 import numpy as np
 
+from src.core.utils.extra_func import mkdir_if_missing
 
-class StereoDepthEstimationTask:
-    def __init__(self, image_data_path_template, num_disparities, block_size):
+
+class EstimateStereoDepth:
+    def __init__(self, image_data_path_template, dest_dir, num_disparities, block_size):
         super().__init__()
         self.image_data_path_template = image_data_path_template
+        self.dest_dir = dest_dir
         self.num_disparities = num_disparities
         self.block_size = block_size
 
@@ -81,12 +84,14 @@ class StereoDepthEstimationTask:
         camera_right, r_right, t_right = self.decompose_projection_matrix(
             self.right_calib_matrix
         )
-        depths_list = []
+        mkdir_if_missing(self.dest_dir)
+
         for img_name in sorted(
             os.listdir(self.image_data_path_template.format("left"))
         ):
             left_img, right_img = self.get_image_pair(img_name)
             disparity = self.compute_disparity_map(left_img, right_img)
             depth_map = self.compute_depth_map(disparity, camera_left, t_left, t_right)
-            depths_list.append(depth_map)
-        return depths_list
+            np.save(
+                os.path.join(self.dest_dir, img_name.replace("png", "npy")), depth_map
+            )
