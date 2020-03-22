@@ -1,14 +1,15 @@
 import argparse
+import errno
+import os
+from typing import Tuple
 
 import cv2
 import numpy as np
 
 
-import errno
-import os
+def mkdir_if_missing(dir_path: str):
+    """creates new dir if it doesnt exists"""
 
-
-def mkdir_if_missing(dir_path):
     try:
         os.makedirs(dir_path)
     except OSError as e:
@@ -17,7 +18,32 @@ def mkdir_if_missing(dir_path):
 
 
 class EstimateStereoDepth:
-    def __init__(self, image_data_path_template, dest_dir, num_disparities, block_size):
+    """
+    This class implements computations to get image depth from a pair of stereo images.
+    Each pixel at output depth corresponds to distance from camera to itself.
+
+    ...
+
+    Attributes
+    ----------
+    image_data_path_template : str
+        path template to left/right image pairs
+    dest_dir : str
+        path to save output image depths
+    num_disparities : int
+        provides search range for disparity calculation form 0 to num_disparities
+    block_size : int
+        larger block_size implies smoother, though less accurate disparity map. Smaller block_size gives more
+    detailed disparity map, but there is higher chance for algorithm to find a wrong correspondence
+    """
+
+    def __init__(
+        self,
+        image_data_path_template: str,
+        dest_dir: str,
+        num_disparities: int,
+        block_size: int,
+    ):
         super().__init__()
         self.image_data_path_template = image_data_path_template
         self.dest_dir = dest_dir
@@ -31,7 +57,9 @@ class EstimateStereoDepth:
         [[640.0, 0.0, 640.0, 2176.0], [0.0, 480.0, 480.0, 792.0], [0.0, 0.0, 1.0, 1.4]]
     )
 
-    def get_image_pair(self, img_name):
+    def get_image_pair(self, img_name: str) -> Tuple[np.ndarray, np.ndarray]:
+        """load corresponding left and right images"""
+
         left_img = cv2.imread(
             os.path.join(self.image_data_path_template.format("left"), img_name)
         )
@@ -40,7 +68,10 @@ class EstimateStereoDepth:
         )
         return left_img, right_img
 
-    def compute_disparity_map(self, img_left, img_right):
+    def compute_disparity_map(
+        self, img_left: np.ndarray, img_right: np.ndarray
+    ) -> np.ndarray:
+        """use opencv stereo matcher to compute disparity map between images"""
 
         img_left = cv2.cvtColor(img_left, cv2.COLOR_BGR2GRAY)
         img_right = cv2.cvtColor(img_right, cv2.COLOR_BGR2GRAY)
@@ -50,7 +81,10 @@ class EstimateStereoDepth:
         )
         return matcher.compute(img_left, img_right).astype(np.float32) / 16
 
-    def decompose_projection_matrix(self, calibration_matrix):
+    def decompose_projection_matrix(
+        self, calibration_matrix: np.ndarray
+    ) -> Tuple[np.ndarray, ...]:
+        """get intrinsic and extrinsic parameters as matrices"""
 
         (
             camera_matrix,
@@ -66,8 +100,13 @@ class EstimateStereoDepth:
         return camera_matrix, rotation_vector, translation_vector
 
     def compute_depth_map(
-        self, disparity_map, camera_left, translation_left, translation_right
-    ):
+        self,
+        disparity_map: np.ndarray,
+        camera_left: np.ndarray,
+        translation_left: np.ndarray,
+        translation_right: np.ndarray,
+    ) -> np.ndarray:
+        """calculate image depth"""
 
         # Get the focal length from the K matrix
         focal_length = camera_left[0, 0]
@@ -107,13 +146,20 @@ class EstimateStereoDepth:
             )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="stereo depth estimator")
 
-    parser.add_argument('--image_data_path_template', type=str, metavar='PATH', help="path template to left/right image pairs")
-    parser.add_argument('--dest_dir', type=str, metavar='PATH', help="path to save output inmage depths")
-    parser.add_argument('--num_disparities', type=int, default=6*16)
-    parser.add_argument('--block_size', type=int, default=11)
+    parser.add_argument(
+        "--image_data_path_template",
+        type=str,
+        metavar="PATH",
+        help="path template to left/right image pairs",
+    )
+    parser.add_argument(
+        "--dest_dir", type=str, metavar="PATH", help="path to save output image depths"
+    )
+    parser.add_argument("--num_disparities", type=int, default=6 * 16)
+    parser.add_argument("--block_size", type=int, default=11)
     args = parser.parse_args()
     args = vars(args)
     stereo_depth_task = EstimateStereoDepth(**args)

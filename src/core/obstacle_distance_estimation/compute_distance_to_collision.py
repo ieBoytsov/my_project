@@ -1,13 +1,15 @@
 import argparse
-import cv2
-import numpy as np
-import json
-
 import errno
+import json
 import os
+from typing import Dict, Tuple
+
+import numpy as np
 
 
-def mkdir_if_missing(dir_path):
+def mkdir_if_missing(dir_path: str):
+    """creates new dir if it doesnt exists"""
+
     try:
         os.makedirs(dir_path)
     except OSError as e:
@@ -16,14 +18,32 @@ def mkdir_if_missing(dir_path):
 
 
 class ComputeDistanceToCollision:
-    def __init__(self, depth_data_dir, masks_data_dir, dest_dir):
+    """
+    This class uses detected bounding boxes and corresponding depths to find the distance to the
+    closest obstacle on the road for a given image
+
+    ...
+
+    Attributes
+    ----------
+    depth_data_dir : str
+        path to images depth files
+    masks_data_dir : str
+        path to corresponding bbox annotations
+    dest_dir : str
+        path to save output info
+    """
+
+    def __init__(self, depth_data_dir: str, masks_data_dir: str, dest_dir: str):
         super().__init__()
         self.depth_data_dir = depth_data_dir
         self.masks_data_dir = masks_data_dir
         self.dest_dir = dest_dir
         self.file_names = [x.split(".")[0] for x in os.listdir(self.depth_data_dir)]
 
-    def class_mapping(self, obj_name):
+    def class_mapping(self, obj_name: str) -> int:
+        """default mapping of labels"""
+
         classes = [
             "Car",
             "Van",
@@ -41,7 +61,8 @@ class ComputeDistanceToCollision:
 
         return mapping[obj_name]
 
-    def load_bboxes(self, mask_dir):
+    def load_bboxes(self, mask_dir: str) -> np.ndarray:
+        """load bounding boxes with all detected objects on image"""
 
         with open(mask_dir) as f:
             content = f.readlines()
@@ -56,22 +77,17 @@ class ComputeDistanceToCollision:
 
         return boxes
 
-    def get_img_data(self, file_name):
+    def get_img_data(self, file_name: str) -> Tuple[np.ndarray, np.ndarray]:
+        """get corresponding boxes and depth map for single image"""
+
         boxes = self.load_bboxes(os.path.join(self.masks_data_dir, file_name + ".txt"))
         depth_map = np.load(os.path.join(self.depth_data_dir, file_name + ".npy"))
         return boxes, depth_map
 
-    def locate_obstacle_in_image(self, image, obstacle_image):
-
-        # Run the template matching from OpenCV
-        cross_corr_map = cv2.matchTemplate(image, obstacle_image, method=cv2.TM_CCOEFF)
-
-        # Locate the position of the obstacle using the minMaxLoc function from OpenCV
-        _, _, _, obstacle_location = cv2.minMaxLoc(cross_corr_map)
-
-        return cross_corr_map, obstacle_location
-
-    def get_distance_to_closest_object(self, detected_objects, depth_map):
+    def get_distance_to_closest_object(
+        self, detected_objects: np.ndarray, depth_map: np.ndarray
+    ) -> Dict[str, str]:
+        """compute distance to every obstacle at the image and return the closest one"""
 
         closest_point_depth = np.inf
         closest_object = None
@@ -88,17 +104,30 @@ class ComputeDistanceToCollision:
         mkdir_if_missing(self.dest_dir)
         for file_name in sorted(self.file_names):
             detected_objects, depth_map = self.get_img_data(file_name)
-            object_distance_mapping = self.get_distance_to_closest_object(detected_objects, depth_map)
-            with open(os.path.join(self.dest_dir, '{}.json'.format(file_name)), 'w') as fp:
+            object_distance_mapping = self.get_distance_to_closest_object(
+                detected_objects, depth_map
+            )
+            with open(
+                os.path.join(self.dest_dir, "{}.json".format(file_name)), "w"
+            ) as fp:
                 json.dump(object_distance_mapping, fp)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="compute distance to collision")
 
-    parser.add_argument('--depth_data_dir', type=str, metavar='PATH', help="path to images depth files")
-    parser.add_argument('--masks_data_dir', type=str, metavar='PATH', help="path to corresponding bbox annotations")
-    parser.add_argument('--dest_dir', type=str, metavar='PATH', help="path to save output info")
+    parser.add_argument(
+        "--depth_data_dir", type=str, metavar="PATH", help="path to images depth files"
+    )
+    parser.add_argument(
+        "--masks_data_dir",
+        type=str,
+        metavar="PATH",
+        help="path to corresponding bbox annotations",
+    )
+    parser.add_argument(
+        "--dest_dir", type=str, metavar="PATH", help="path to save output info"
+    )
     args = parser.parse_args()
     args = vars(args)
     compute_distance_task = ComputeDistanceToCollision(**args)
