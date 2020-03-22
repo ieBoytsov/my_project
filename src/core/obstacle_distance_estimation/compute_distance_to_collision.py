@@ -1,8 +1,18 @@
-import os
-
+import argparse
 import cv2
 import numpy as np
 import json
+
+import errno
+import os
+
+
+def mkdir_if_missing(dir_path):
+    try:
+        os.makedirs(dir_path)
+    except OSError as e:
+        if e.errno != errno.EEXIST:
+            raise
 
 
 class ComputeDistanceToCollision:
@@ -75,8 +85,21 @@ class ComputeDistanceToCollision:
         return {str(closest_object): str(closest_point_depth)}
 
     def execute(self):
+        mkdir_if_missing(self.dest_dir)
         for file_name in sorted(self.file_names):
             detected_objects, depth_map = self.get_img_data(file_name)
             object_distance_mapping = self.get_distance_to_closest_object(detected_objects, depth_map)
             with open(os.path.join(self.dest_dir, '{}.json'.format(file_name)), 'w') as fp:
                 json.dump(object_distance_mapping, fp)
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description="compute distance to collision")
+
+    parser.add_argument('--depth_data_dir', type=str, metavar='PATH', help="path to images depth files")
+    parser.add_argument('--masks_data_dir', type=str, metavar='PATH', help="path to corresponding bbox annotations")
+    parser.add_argument('--dest_dir', type=str, metavar='PATH', help="path to save output info")
+    args = parser.parse_args()
+    args = vars(args)
+    compute_distance_task = ComputeDistanceToCollision(**args)
+    compute_distance_task.execute()
