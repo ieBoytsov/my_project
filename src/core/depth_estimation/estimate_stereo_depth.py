@@ -1,9 +1,19 @@
-import os
+import argparse
 
 import cv2
 import numpy as np
 
-from src.core.utils.extra_func import mkdir_if_missing
+
+import errno
+import os
+
+
+def mkdir_if_missing(dir_path):
+    try:
+        os.makedirs(dir_path)
+    except OSError as e:
+        if e.errno != errno.EEXIST:
+            raise
 
 
 class EstimateStereoDepth:
@@ -95,3 +105,16 @@ class EstimateStereoDepth:
             np.save(
                 os.path.join(self.dest_dir, img_name.replace("png", "npy")), depth_map
             )
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description="stereo depth estimator")
+
+    parser.add_argument('--image_data_path_template', type=str, metavar='PATH', help="path template to left/right image pairs")
+    parser.add_argument('--dest_dir', type=str, metavar='PATH', help="path to save output inmage depths")
+    parser.add_argument('--num_disparities', type=int, default=6*16)
+    parser.add_argument('--block_size', type=int, default=11)
+    args = parser.parse_args()
+    args = vars(args)
+    stereo_depth_task = EstimateStereoDepth(**args)
+    stereo_depth_task.execute()
