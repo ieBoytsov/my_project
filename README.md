@@ -18,4 +18,4 @@ Example of image:
 Given a pair of stereo images from both left and right camera it is possible to extract image depth.
 Intensity of each pixel here corresponds to a distance from camera.
 
-![sample_depth](https://user-images.githubusercontent.com/61888740/77248337-bbf48c80-6c49-11ea-9102-d3947d1765a3.png)
+![new_depth](https://user-images.githubusercontent.com/61888740/77573548-e2345980-6ee1-11ea-8346-1b154917bdc9.png)
