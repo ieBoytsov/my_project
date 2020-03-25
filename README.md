@@ -4,7 +4,7 @@ This project is intended to implement some of environment
 perception tasks that are often used in Autonomous Vehicles pipelines.
 
 Project consists of the following tasks:
-* Detecting objects with neural network
+* Detecting objects with neural network (work in progress)
 * Estimating image depth from corresponding pairs of stereo images
 * Computing distances to closest obstacles using image depths and bounding boxes
 * Estimating vehicle trajectory from subsequent images
