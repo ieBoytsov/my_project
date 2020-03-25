@@ -79,6 +79,7 @@ class EstimateStereoDepth:
         matcher = cv2.StereoBM_create(
             numDisparities=self.num_disparities, blockSize=self.block_size
         )
+        # opencv matcher returns a fixed-point disparity map, where disparity values are multiplied by 16
         return matcher.compute(img_left, img_right).astype(np.float32) / 16
 
     def decompose_projection_matrix(
