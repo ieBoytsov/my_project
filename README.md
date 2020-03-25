@@ -13,7 +13,7 @@ that consists of 7481 training images and 7518 test images:
 http://www.cvlibs.net/datasets/kitti/eval_object.php?obj_benchmark=2d
 
 Example of image:
-![ sample_img](https://user-images.githubusercontent.com/61888740/77248259-2c4ede00-6c49-11ea-9eda-b28a1a932ad1.png)
+![new_img](https://user-images.githubusercontent.com/61888740/77573415-b3b67e80-6ee1-11ea-9d6a-01c07f203211.png)
 
 Given a pair of stereo images from both left and right camera it is possible to extract image depth.
 Intensity of each pixel here corresponds to a distance from camera.
