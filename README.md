@@ -19,3 +19,6 @@ Given a pair of stereo images from both left and right camera it is possible to 
 Intensity of each pixel here corresponds to a distance from camera.
 
 ![new_depth](https://user-images.githubusercontent.com/61888740/77573548-e2345980-6ee1-11ea-8346-1b154917bdc9.png)
+
+Example of estimated vehicle trajectory conputed on asreies of subsequent road images:
+![traj](https://user-images.githubusercontent.com/61888740/77574579-4a376f80-6ee3-11ea-9e9a-549a6eb1420f.png)
