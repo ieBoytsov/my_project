@@ -50,3 +50,7 @@ format-black:
 .PHONY: format-isort
 format-isort:
 	@isort -rc ${LINT_TARGET}
+
+.PHONY: test
+test:
+	pytest tests
