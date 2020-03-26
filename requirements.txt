@@ -1,0 +1,11 @@
+opencv-python==4.2.0.32
+torch==1.4.0
+numpy==1.15.1
+Pillow==7.0.0
+pytest==5.3.5
+mypy==0.761
+black==19.10b0
+flake8==3.7.9
+pylint==2.4.4
+scikit-image==0.16.2
+scikit-learn==0.22.2.post1
