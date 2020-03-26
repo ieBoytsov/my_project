@@ -37,6 +37,7 @@ inside the project directory do the following:
 3) Install project dependencies
 `pip3 install -r requirements.txt`
 4) Run tests to check everythin is ok:
-'pytest tests`
+`pytest tests`
 5) Run any task you want. For example to run stereo depth estimation, call the script as folows:
 `python3 src/core/depth/estimation/estimate_stereo_depth.py ----image_data_path_template path/to/image/pairs --dest_dir path/to/save --num_disparities 16 --block_size 11`
+
