@@ -26,3 +26,17 @@ Intensity of each pixel here corresponds to a distance from camera.
 Example of estimated vehicle trajectory computed on a series of subsequent road images:
 
 ![traj](https://user-images.githubusercontent.com/61888740/77574579-4a376f80-6ee3-11ea-9e9a-549a6eb1420f.png)
+
+In order to run any of these tasks clone the project:
+inside the project directory do the following:
+
+1) Create virtual environment:
+`make venv`
+2) Activate venv
+`source venv/bin/activate`
+3) Install project dependencies
+`pip3 install -r requirements.txt`
+4) Run tests to check everythin is ok:
+'pytest tests`
+5) Run any task you want. For example to run stereo depth estimation, call the script as folows:
+`python3 src/core/depth/estimation/estimate_stereo_depth.py ----image_data_path_template path/to/image/pairs --dest_dir path/to/save --num_disparities 16 --block_size 11`
