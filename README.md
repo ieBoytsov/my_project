@@ -27,8 +27,8 @@ Example of estimated vehicle trajectory computed on a series of subsequent road 
 
 ![traj](https://user-images.githubusercontent.com/61888740/77574579-4a376f80-6ee3-11ea-9e9a-549a6eb1420f.png)
 
-In order to run any of these tasks clone the project:
-inside the project directory do the following:
+In order to run any of these tasks clone the project
+make sure you are inside the project directory and do the following:
 
 1) Create virtual environment:
 `make venv`
