@@ -3,13 +3,17 @@
 This project is intended to implement some of environment 
 perception tasks that are often used in Autonomous Vehicles pipelines.
 
-Project consists of the following tasks:
-* Detecting objects with neural network (work in progress)
+Project consists of the following subsequent tasks:
+* Detecting objects with neural network
 * Estimating image depth from corresponding pairs of stereo images
 * Computing distances to closest obstacles using image depths and bounding boxes
 * Estimating vehicle trajectory from subsequent images
 
-Some of the tasks are independent while others use output of another tasks.
+
+For object detection as a baseline I use YOLO v3 detector with Darknet backbone.
+Credits for pytorch realization come to:
+https://github.com/packyan/PyTorch-YOLOv3-kitti and https://github.com/keshik6/KITTI-2d-object-detection
+
 
 Experiments are based on famous road traffic Kitti 2D object detection dataset
 that consists of 7481 training images and 7518 test images:
@@ -39,5 +43,5 @@ make sure you are inside the project directory and do the following:
 4) Run tests to check everything is ok:
 `make test`
 5) Run any task you want. For example to run stereo depth estimation, call the script as folows:
-`python3 src/core/depth_estimation/estimate_stereo_depth.py --image_data_path_template path/to/image/pairs --dest_dir path/to/save --num_disparities 16 --block_size 11`
+`python3 estimate_stereo_depth.py --image_data_path_template path/to/image/pairs --dest_dir path/to/save --num_disparities 16 --block_size 11`
 
