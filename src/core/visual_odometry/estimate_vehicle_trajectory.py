@@ -1,18 +1,11 @@
 import argparse
-import errno
 import os
 from typing import List, Tuple
 
 import cv2
 import numpy as np
 
-
-def mkdir_if_missing(dir_path: str):
-    try:
-        os.makedirs(dir_path)
-    except OSError as e:
-        if e.errno != errno.EEXIST:
-            raise
+from src.core.utils.extra_func import mkdir_if_missing
 
 
 class EstimateVehicleTrajectory:
