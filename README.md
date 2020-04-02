@@ -7,7 +7,7 @@ Project consists of the following subsequent tasks:
 * Detecting objects with neural network
 * Estimating image depth from corresponding pairs of stereo images
 * Computing distances to closest obstacles using image depths and bounding boxes
-* Estimating vehicle trajectory from subsequent images
+* Estimating vehicle trajectory from subsequent images (independent task)
 
 
 For object detection as a baseline I use YOLO v3 detector with Darknet backbone.
