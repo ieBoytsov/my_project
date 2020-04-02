@@ -2,13 +2,18 @@ import json
 import os
 from tempfile import TemporaryDirectory
 
+import pkg_resources
+
 from src.core.obstacle_distance_estimation.compute_distance_to_collision import \
     ComputeDistanceToCollision
 
 
 def test_compute_distance_to_collision():
-    depth_data_dir = "/Users/i.boytsov/Projects/perception/tests/core/data/obstacle_location_data/depths"
-    masks_data_dir = "/Users/i.boytsov/Projects/perception//tests/core/data/obstacle_location_data/masks"
+    depth_path_template = "data/obstacle_location_data/depths"
+    depth_data_dir = pkg_resources.resource_filename(__name__, depth_path_template)
+
+    masks_path_template = "data/obstacle_location_data/masks"
+    masks_data_dir = pkg_resources.resource_filename(__name__, masks_path_template)
     with TemporaryDirectory() as temp_dir:
         test_task = ComputeDistanceToCollision(
             dest_dir=temp_dir,

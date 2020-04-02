@@ -2,15 +2,15 @@ import os
 from tempfile import TemporaryDirectory
 
 import numpy as np
+import pkg_resources
 
 from src.core.visual_odometry.estimate_vehicle_trajectory import \
     EstimateVehicleTrajectory
 
 
 def test_estimate_vehicle_trajectory_task():
-    test_image_data_dir = (
-        "/Users/i.boytsov/Projects/perception/tests/core/data/visual_odometry_data/"
-    )
+    image_path_template = "data/visual_odometry_data/"
+    test_image_data_dir = pkg_resources.resource_filename(__name__, image_path_template)
     dist_threshold = 0.6
     do_filter = True
     with TemporaryDirectory() as temp_dir:
