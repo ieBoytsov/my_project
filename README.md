@@ -13,7 +13,7 @@ Project consists of the following subsequent tasks:
 For object detection as a baseline I use YOLO v3 detector with Darknet backbone.
 Pretrained imagenet weights were downloaded from https://pjreddie.com/media/files/darknet53.conv.74)
 
-Credits for pytorch realization come to:
+Credits for PyTorch realization come to:
 https://github.com/packyan/PyTorch-YOLOv3-kitti and https://github.com/keshik6/KITTI-2d-object-detection
 
 
